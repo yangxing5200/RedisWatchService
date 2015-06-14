@@ -38,7 +38,7 @@ namespace RedisWatch
                 try
                 {
                     CacheHelper.Item_Set(key, value);
-                    _log.Info(string.Format("Redis is {0}", CacheHelper.Item_Get<object>(key)));
+                    _log.Info(string.Format("Content: {0}", CacheHelper.Item_Get<object>(key)));
                     CacheHelper.Item_Remove(key);
                     error = 0;
                 }
@@ -55,9 +55,6 @@ namespace RedisWatch
                     RunCmdWithoutResult(_redisStart, _redisConf, false);
                     _log.Info(string.Format("Redis 已启动"));
                 }
-             
-               // _log.Info(string.Format("Redis is {0}", CacheHelper.Item_Get<object>(key)));
-               
                 Thread.Sleep(5000);
             }
 
