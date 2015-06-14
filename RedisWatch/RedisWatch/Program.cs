@@ -17,7 +17,7 @@ namespace RedisWatch
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[] 
             { 
-                new Service1() 
+                new RedisWatch() 
             };
             ServiceBase.Run(ServicesToRun);
         }
