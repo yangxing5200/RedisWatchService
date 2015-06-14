@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Install.bat" />
     <None Include="packages.config" />
     <None Include="RedisWatch_TemporaryKey.pfx" />
   </ItemGroup>

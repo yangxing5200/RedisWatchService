@@ -1,0 +1,1 @@
+﻿sc create RedisWatch binpath= "c:/in estapp.exe" displayname= "RedisWatch"  start= auto 
