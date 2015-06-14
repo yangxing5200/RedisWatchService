@@ -16,8 +16,18 @@ namespace RedisWatch
         private string _redisStart = ConfigurationManager.AppSettings["RedisStart"];
         private string _redisConf = ConfigurationManager.AppSettings["RedisConf"];
         Timer timer;
+
+
+
+        public void Start()
+        {
+            TimerCallback tc = Run;
+            timer = new Timer(tc);
+            timer.Change(1000 * 2, 1000 * 6);
+        }
         public void Run(object o)
         {
+            timer.Change(Timeout.Infinite, 1000 * 6);
             var key = "redis__alive__key";
             var value = "Redis alive";
 
@@ -29,6 +39,7 @@ namespace RedisWatch
                 {
                     CacheHelper.Item_Set(key, value);
                     CacheHelper.Item_Remove(key);
+                    error = 0;
                 }
                 catch
                 {
@@ -36,26 +47,15 @@ namespace RedisWatch
                     if (error > 3)
                     {
                         _log.Info("Redis 三次重启失败！");
-                        Thread.Sleep(1000 * 60 * 10);
+                        timer.Change(1000 * 2, 1000 * 6);
                         break;
                     }
                     _log.Info(string.Format("Redis 第{0}次启动...", error));
-                  
-                    Task.Factory.StartNew(() =>
-                    {
-                        RunCmdWithoutResult(_redisStart, _redisConf, true);
-                    });
-
-                    _log.Info(string.Format("尝试写入信息，{0}：{1}", key, value));
-                    CacheHelper.Item_Set(key, value);
-                    _log.Info(string.Format("尝试读取信息，{0}", key));
-                    var v = CacheHelper.Item_Get<object>(key);
-                    _log.Info(string.Format("读取完成，{0}：{1}", key, v));
-                    _log.Info("Redis 正常工作。");
-
+                    RunCmdWithoutResult(_redisStart, _redisConf, true);
                 }
                 Thread.Sleep(5000);
             }
+
         }
         public static void RunCmdWithoutResult(string file, string command, bool wait)
         {

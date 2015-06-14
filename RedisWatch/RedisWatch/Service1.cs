@@ -23,11 +23,9 @@ namespace RedisWatch
 
         protected override void OnStart(string[] args)
         {
-            TimerCallback tc = new Watcher().Run;
-            timer = new Timer(tc);
+            Watcher watcher = new Watcher();
+            watcher.Start();
 
-            timer.Change( 1000 * 6 * 1,Timeout.Infinite);
-           
         }
 
         protected override void OnStop()
