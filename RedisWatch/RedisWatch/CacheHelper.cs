@@ -20,6 +20,7 @@ namespace RedisWatch
                     {
                         _prcm = CreateManager(new string[] { RedisPath }, new string[] { RedisPath });
                     }
+                   
                     return _prcm;
                 }
                 catch (Exception)

@@ -38,10 +38,11 @@ namespace RedisWatch
                 try
                 {
                     CacheHelper.Item_Set(key, value);
+                    _log.Info(string.Format("Redis is {0}", CacheHelper.Item_Get<object>(key)));
                     CacheHelper.Item_Remove(key);
                     error = 0;
                 }
-                catch
+                catch (Exception ex)
                 {
                     error++;
                     if (error > 3)
@@ -50,9 +51,13 @@ namespace RedisWatch
                         timer.Change(1000 * 2, 1000 * 6);
                         break;
                     }
-                    _log.Info(string.Format("Redis 第{0}次启动...", error));
-                    RunCmdWithoutResult(_redisStart, _redisConf, true);
+                    _log.Info(string.Format("Redis 第{0}次启动...{1}", error,ex.Message));
+                    RunCmdWithoutResult(_redisStart, _redisConf, false);
+                    _log.Info(string.Format("Redis 已启动"));
                 }
+             
+               // _log.Info(string.Format("Redis is {0}", CacheHelper.Item_Get<object>(key)));
+               
                 Thread.Sleep(5000);
             }
 
