@@ -28,8 +28,8 @@ namespace RedisWatch
         public void Run(object o)
         {
             timer.Change(Timeout.Infinite, 1000 * 6);
-            var key = "redis__alive__key";
-            var value = "Redis alive";
+            const string key = "redis__alive__key";
+            const string value = "Redis alive";
 
             int error = 0;
             _log.Info("Redis 监听服务正在启动...");
@@ -38,6 +38,7 @@ namespace RedisWatch
                 try
                 {
                     CacheHelper.Item_Set(key, value);
+
                     _log.Info(string.Format("Content: {0}", CacheHelper.Item_Get<object>(key)));
                     CacheHelper.Item_Remove(key);
                     error = 0;

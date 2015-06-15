@@ -1,1 +1,1 @@
-﻿sc create RedisWatch binpath= "c:/in estapp.exe" displayname= "RedisWatch"  start= auto 
+﻿sc create RedisWatch binpath= "F:\deploy\Service\RedisWatch\RedisWatch.exe" displayname= "RedisWatch"  start= auto 
