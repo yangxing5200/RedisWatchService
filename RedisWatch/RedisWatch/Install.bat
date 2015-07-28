@@ -1,1 +1,2 @@
-﻿sc create RedisWatch binpath= "F:\deploy\Service\RedisWatch\RedisWatch.exe" displayname= "RedisWatch"  start= auto 
+﻿set pa=%cd%  
+sc create RedisWatch binpath= %cd% displayname= "RedisWatch"  start= auto 

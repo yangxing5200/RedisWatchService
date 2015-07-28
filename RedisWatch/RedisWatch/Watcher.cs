@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace RedisWatch
                 }
                 catch (Exception ex)
                 {
+                   _log.Error(ex.Message);
                     error++;
                     if (error > 3)
                     {
@@ -53,7 +55,8 @@ namespace RedisWatch
                         break;
                     }
                     _log.Info(string.Format("Redis 第{0}次启动...{1}", error,ex.Message));
-                    RunCmdWithoutResult(_redisStart, _redisConf, false);
+                    _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
+                    RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
                     _log.Info(string.Format("Redis 已启动"));
                 }
                 Thread.Sleep(5000);

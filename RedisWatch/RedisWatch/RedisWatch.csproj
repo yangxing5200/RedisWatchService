@@ -22,7 +22,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -134,11 +135,18 @@
     <None Include="Install.bat" />
     <None Include="packages.config" />
     <None Include="RedisWatch_TemporaryKey.pfx" />
+    <None Include="redis\redis.conf" />
+    <None Include="redis\start.bat" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="default.htm" />
     <Content Include="jqunback-1.51.min.js" />
     <Content Include="log4net.xml" />
+    <Content Include="redis\redis-benchmark.exe" />
+    <Content Include="redis\redis-check-aof.exe" />
+    <Content Include="redis\redis-check-dump.exe" />
+    <Content Include="redis\redis-cli.exe" />
+    <Content Include="redis\redis-server.exe" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
