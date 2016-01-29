@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Common.Logging;
+using RedisWatch;
 
 namespace WindowsFormsApplication1
 {
@@ -26,8 +27,10 @@ namespace WindowsFormsApplication1
             //startInfo.FileName = @"C:\Users\Jason\Desktop\redis\start.bat";
             //startInfo.Arguments = "";
             //Process.Start(startInfo);
-            RunCmdWithoutResult(@"C:\Users\Jason\Desktop\redis\start.bat",
-                "", true);
+
+            Watcher a=new Watcher();
+            a.Start();
+          //  RunCmdWithoutResult(@"C:\Users\Jason\Desktop\redis\start.bat","", true);
             // Process.Start(@"C:\Users\Jason\Desktop\redis\install.vbs");
         }
         public static void RunCmdWithoutResult(string file, string command, bool wait)

@@ -96,6 +96,12 @@
     <Content Include="log4net.dll" />
     <Content Include="log4net.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RedisWatch\RedisWatch.csproj">
+      <Project>{49ee167a-9c54-43b3-a8d8-5e5b4a471ab2}</Project>
+      <Name>RedisWatch</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

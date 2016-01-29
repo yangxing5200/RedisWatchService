@@ -48,16 +48,11 @@ namespace RedisWatch
                         {
                             CacheHelper.Item_Set(key, value);
                             taskWatchValue = CacheHelper.Item_Get<object>(key);
+                            _log.Info(string.Format("Content: {0}", taskWatchValue));
+                            CacheHelper.Item_Remove(key);
                         }
                         catch
                         {
-                            _log.Info(string.Format("开始杀掉进程..."));
-                            var procs = Process.GetProcessesByName("redis-server");
-                            if (procs.Length > 0)
-                            {
-                                _log.Info("Killing...");
-                                procs[0].Kill();
-                            }
                         }
                     });
                     //等待两个任务执行完毕
@@ -69,15 +64,13 @@ namespace RedisWatch
                         if (procs.Length > 0)
                         {
                             procs[0].Kill();
-                            _log.Info(string.Format("Redis 重新启动..."));
-                            _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
-                            RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
-                            Thread.Sleep(2000);
                         }
+                        _log.Info(string.Format("Redis 重新启动..."));
+                        _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
+                        RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
+                        Thread.Sleep(2000);
                     }
-                    CacheHelper.Item_Set(key, value);
-                    _log.Info(string.Format("Content: {0}", CacheHelper.Item_Get<object>(key)));
-                    CacheHelper.Item_Remove(key);
+                  
                     error = 0;
                 }
                 catch (Exception ex)
