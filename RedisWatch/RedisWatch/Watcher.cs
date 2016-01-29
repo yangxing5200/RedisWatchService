@@ -28,7 +28,7 @@ namespace RedisWatch
         }
         public void Run(object o)
         {
-            timer.Change(Timeout.Infinite, 1000 * 6);
+            timer.Change(Timeout.Infinite, 1000 * 30);
             const string key = "redis__alive__key";
             const string value = "Redis alive";
 
@@ -36,17 +36,53 @@ namespace RedisWatch
             _log.Info("Redis 监听服务正在启动...");
             while (true)
             {
+
                 try
                 {
+                    object taskWatchValue = null;
+                    //预防 redis 卡死
+                    var taskWatch = Task.Factory.StartNew(() => Thread.Sleep(3000));
+                    var taskRedis = Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            CacheHelper.Item_Set(key, value);
+                            taskWatchValue = CacheHelper.Item_Get<object>(key);
+                        }
+                        catch
+                        {
+                            _log.Info(string.Format("开始杀掉进程..."));
+                            var procs = Process.GetProcessesByName("redis-server");
+                            if (procs.Length > 0)
+                            {
+                                _log.Info("Killing...");
+                                procs[0].Kill();
+                            }
+                        }
+                    });
+                    //等待两个任务执行完毕
+                    Task.WaitAny(taskRedis, taskWatch);
+                    if (taskWatchValue == null)
+                    {
+                        _log.Info(string.Format("Redis 阻塞了，开始杀掉进程..."));
+                        var procs = Process.GetProcessesByName("redis-server");
+                        if (procs.Length > 0)
+                        {
+                            procs[0].Kill();
+                            _log.Info(string.Format("Redis 重新启动..."));
+                            _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
+                            RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
+                            Thread.Sleep(2000);
+                        }
+                    }
                     CacheHelper.Item_Set(key, value);
-
                     _log.Info(string.Format("Content: {0}", CacheHelper.Item_Get<object>(key)));
                     CacheHelper.Item_Remove(key);
                     error = 0;
                 }
                 catch (Exception ex)
                 {
-                   _log.Error(ex.Message);
+                    _log.Error(ex.Message);
                     error++;
                     if (error > 3)
                     {
@@ -54,14 +90,22 @@ namespace RedisWatch
                         timer.Change(1000 * 2, 1000 * 6);
                         break;
                     }
-                    _log.Info(string.Format("Redis 第{0}次启动...{1}", error,ex.Message));
+                    _log.Info(string.Format("Redis 第{0}次启动...{1}", error, ex.Message));
+
+                    _log.Info(string.Format("开始杀掉进程..."));
+                    var procs = Process.GetProcessesByName("redis-server");
+                    if (procs.Length > 0)
+                    {
+                        _log.Info("Killing...");
+                        procs[0].Kill();
+                    }
+
                     _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
                     RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
                     _log.Info(string.Format("Redis 已启动"));
                 }
-                Thread.Sleep(5000);
+                Thread.Sleep(10 * 1000);
             }
-
         }
         public static void RunCmdWithoutResult(string file, string command, bool wait)
         {
