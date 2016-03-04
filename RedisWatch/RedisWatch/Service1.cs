@@ -30,7 +30,7 @@ namespace RedisWatch
 
         protected override void OnStop()
         {
-            _log.Info("停止Redis Watch 服务...");
+            _log.Info("stop Redis Watch services...");
             if (timer != null)
             {
                 timer.Dispose();

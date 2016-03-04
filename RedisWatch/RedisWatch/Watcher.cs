@@ -14,8 +14,7 @@ namespace RedisWatch
     public class Watcher
     {
         private ILog _log = LogManager.GetLogger("logSample");
-        private string _redisStart = ConfigurationManager.AppSettings["RedisStart"];
-        private string _redisConf = ConfigurationManager.AppSettings["RedisConf"];
+  
         Timer timer;
 
 
@@ -33,7 +32,7 @@ namespace RedisWatch
             const string value = "Redis alive";
 
             int error = 0;
-            _log.Info("Redis 监听服务正在启动...");
+            _log.Info("Redis Listener Service Starting...");
             while (true)
             {
 
@@ -49,7 +48,7 @@ namespace RedisWatch
                             CacheHelper.Item_Set(key, value);
                             taskWatchValue = CacheHelper.Item_Get<object>(key);
                             _log.Info(string.Format("Content: {0}", taskWatchValue));
-                            CacheHelper.Item_Remove(key);
+                          
                         }
                         catch
                         {
@@ -59,43 +58,25 @@ namespace RedisWatch
                     Task.WaitAny(taskRedis, taskWatch);
                     if (taskWatchValue == null)
                     {
-                        _log.Info(string.Format("Redis 阻塞了，开始杀掉进程..."));
+                        _log.Info(string.Format("Redis connection timeout"));
                         var procs = Process.GetProcessesByName("redis-server");
                         if (procs.Length > 0)
                         {
+                            _log.Info(string.Format("Kill process..."));
                             procs[0].Kill();
                         }
-                        _log.Info(string.Format("Redis 重新启动..."));
+                        _log.Info(string.Format("Redis restart..."));
                         _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
                         RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
+                        _log.Info(string.Format("Redis restart success"));
                     }
                   
                     error = 0;
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex.Message);
-                    error++;
-                    if (error > 3)
-                    {
-                        _log.Info("Redis 三次重启失败！");
-                        timer.Change(1000 * 2, 1000 * 6);
-                        break;
-                    }
-                    _log.Info(string.Format("Redis 第{0}次启动...{1}", error, ex.Message));
-
-                    _log.Info(string.Format("开始杀掉进程..."));
-                    var procs = Process.GetProcessesByName("redis-server");
-                    if (procs.Length > 0)
-                    {
-                        _log.Info("Killing...");
-                        procs[0].Kill();
-                    }
-
-                    _log.Info(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe" + "       " + AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf");
-                    RunCmdWithoutResult(AppDomain.CurrentDomain.BaseDirectory + "redis\\redis-server.exe", AppDomain.CurrentDomain.BaseDirectory + "redis\\redis.conf", false);
-                    _log.Info(string.Format("Redis 已启动"));
+                  
                 }
                 Thread.Sleep(10 * 1000);
             }
